@@ -14,14 +14,15 @@ const player = {
 };
 
 //enemy properties
+const initialEnemyPosition = { x: canvas.width / 4, y: canvas.height / 4 }; //enemy start position
 const enemy1 = {
-    x:canvas.width / 4,
-    y:canvas.height / 4,
+    x: initialEnemyPosition.x,
+    y: initialEnemyPosition.y,
     radius: 20,
     speed: 2,
     color: 'red',
-    active: true 
-}
+    active: true,
+};
 
 //keyboard input
 const keys = {
@@ -30,6 +31,7 @@ const keys = {
     KeyS: false,
     KeyD: false,
     KeyE: false, //attack button
+    KeyR: false, //reset enemy
 };
 
 document.addEventListener('keydown', (event) => {
@@ -43,6 +45,13 @@ document.addEventListener('keyup', (event) => {
         keys[event.code] = false;
     }
 });
+
+//reset enemy fuction 
+function resetEnemy() {
+    enemy1.x = initialEnemyPosition.x;
+    enemy1.y = initialEnemyPosition.y; 
+    enemy1.active = true;
+}
 
 //update player and enemy position 
 function update() {
@@ -76,6 +85,11 @@ function update() {
             if (distance < player.radius + enemy1.radius) {
                 enemy1.active = false; //deactivates enemy
             }
+    }
+
+    //reset enemy when R pressed
+    if(keys.KeyR) {
+        resetEnemy()
     }
 
 }
