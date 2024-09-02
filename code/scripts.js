@@ -15,8 +15,8 @@ const player = {
 
 //initial enemy positions
 const initialEnemyPositions = [
-    { x: canvas.width / 4, y: canvas.height / 4 },   // First enemy
-    { x: (canvas.width / 4) * 3, y: (canvas.height / 4) * 3 } // Second enemy
+    { x: canvas.width / 4, y: canvas.height / 4 },   //enemy1
+    { x: (canvas.width / 4) * 3, y: (canvas.height / 4) * 3 } //enemy2
 ];
 
 //enemy properties
@@ -27,7 +27,7 @@ const enemies = [
         radius: 20,
         speed: 2,
         color: 'red',
-        active: true // Whether the enemy is active
+        active: true //whether the enemy is active
     },
     {
         x: initialEnemyPositions[1].x,
@@ -35,10 +35,12 @@ const enemies = [
         radius: 20,
         speed: 2,
         color: 'green',
-        active: true // Whether the enemy is active
+        active: true //whether the enemy is active
     }
 ];
 
+//score variable
+let score = 0;
 
 //keyboard input
 const keys = {
@@ -82,7 +84,7 @@ function update() {
     player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
     player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
 
-// Enemies follow the player
+//enemies follow the player
 enemies.forEach(enemy => {
     if (enemy.active) {
         const dx = player.x - enemy.x;
@@ -96,7 +98,7 @@ enemies.forEach(enemy => {
     }
 });
     
- // Kill enemies when E is pressed
+ //kill enemies when E is pressed
     if (keys.KeyE) {
         enemies.forEach(enemy => {
             if (enemy.active) {
@@ -104,37 +106,37 @@ enemies.forEach(enemy => {
                 const dy = player.y - enemy.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
-                // Assuming the player must be close enough to kill the enemy
                 if (distance < player.radius + enemy.radius) {
-                    enemy.active = false; // Deactivate the enemy
+                    enemy.active = false; //attack the enemy
+                    score += 1; //score goes up
                 }
             }
         });
     }
 
-    // Reset enemies when R is pressed
+    //reset enemies when R is pressed
     if (keys.KeyR) {
         resetEnemies();
+        score = 0; //resets score
     }
     }
 
-
-// Draw player and enemies on the canvas
+//draw player and enemies on the canvas
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
 
-    // Draw background color
-    ctx.fillStyle = '#f0f0f0'; // Background color
+    //draw background color
+    ctx.fillStyle = '#f0f0f0'; //background color
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw player as a circle
+    //draw player as a circle
     ctx.beginPath();
     ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
     ctx.fillStyle = player.color;
     ctx.fill();
     ctx.closePath();
 
-    // Draw active enemies
+    //draw active enemies
     enemies.forEach(enemy => {
         if (enemy.active) {
             ctx.beginPath();
@@ -144,8 +146,14 @@ function draw() {
             ctx.closePath();
         }
     });
-}
 
+    //scoreboard
+    ctx.font = '24px Arial';
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'right';
+    ctx.ctxtextBaseline = 'top';
+    ctx.fillText('Score: ' + score, canvas.width - 20, 20);
+}
 
 //main game loop
 function gameLoop() {
@@ -156,6 +164,55 @@ function gameLoop() {
 
 //start game loop
 gameLoop();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
