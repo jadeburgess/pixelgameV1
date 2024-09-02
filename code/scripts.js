@@ -50,9 +50,12 @@ const keys = {
     KeyA: false, // Move left
     KeyS: false, // Move down
     KeyD: false, // Move right
-    KeyE: false, // Attack
     KeyR: false  // Reset enemies
 };
+
+// Mouse key position 
+let mouseX = 0;
+let mouseY = 0;
 
 document.addEventListener('keydown', (event) => {
     if (keys.hasOwnProperty(event.code)) {
@@ -63,6 +66,36 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('keyup', (event) => {
     if (keys.hasOwnProperty(event.code)) {
         keys[event.code] = false;
+    }
+});
+
+// Handle mouse movement for attack targeting
+canvas.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = event.clientX - rect.left;
+    mouseY = event.clientY - rect.top;
+});
+
+// Handle clicks for attacking
+canvas.addEventListener('click', () => {
+    if (gameOver || gameWon) return;
+
+    enemies.forEach(enemy => {
+        if (enemy.active) {
+            const dx = mouseX - enemy.x;
+            const dy = mouseY - enemy.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < player.radius + enemy.radius) {
+                enemy.active = false; // Attack the enemy
+                score += 1; // Increase score
+            }
+        }
+    });
+
+    // Check for game won condition
+    if (enemies.every(enemy => !enemy.active)) {
+        gameWon = true; // Set game won flag
     }
 });
 
