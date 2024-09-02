@@ -57,6 +57,7 @@ const keys = {
 let mouseX = 0;
 let mouseY = 0;
 
+// Event listeners for keyboard input
 document.addEventListener('keydown', (event) => {
     if (keys.hasOwnProperty(event.code)) {
         keys[event.code] = true;
@@ -69,7 +70,7 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
-// Handle mouse movement for attack targeting
+// Handle mouse movement for attack targeting 
 canvas.addEventListener('mousemove', (event) => {
     const rect = canvas.getBoundingClientRect();
     mouseX = event.clientX - rect.left;
@@ -240,6 +241,9 @@ function draw() {
     ctx.textBaseline = 'top';
     ctx.fillText('Score: ' + score, canvas.width - 20, 20);
 
+    // Draw crosshair   
+    drawCrosshair(mouseX, mouseY);
+
     // Draw game over/game won screen
     if (gameOver) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -269,6 +273,21 @@ function draw() {
         ctx.fillText('Click here to Retry', canvas.width / 2, canvas.height / 2 + 10);
         }
     }
+
+// Draw crosshair at specified position 
+function drawCrosshair(x, y) {
+    const crosshairSize = 20;
+
+    ctx.beginPath();
+    ctx.moveTo(x - crosshairSize, y);
+    ctx.lineTo(x + crosshairSize, y);
+    ctx.moveTo(x, y - crosshairSize);
+    ctx.lineTo(x, y + crosshairSize);
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.closePath();
+}
 
 // Main game loop
 function gameLoop() {
