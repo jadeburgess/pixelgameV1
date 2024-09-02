@@ -13,25 +13,41 @@ const player = {
     color: 'purple'
 };
 
+//initial enemy positions
+const initialEnemyPositions = [
+    { x: canvas.width / 4, y: canvas.height / 4 },   // First enemy
+    { x: (canvas.width / 4) * 3, y: (canvas.height / 4) * 3 } // Second enemy
+];
+
 //enemy properties
-const initialEnemyPosition = { x: canvas.width / 4, y: canvas.height / 4 }; //enemy start position
-const enemy1 = {
-    x: initialEnemyPosition.x,
-    y: initialEnemyPosition.y,
-    radius: 20,
-    speed: 2,
-    color: 'red',
-    active: true,
-};
+const enemies = [
+    {
+        x: initialEnemyPositions[0].x,
+        y: initialEnemyPositions[0].y,
+        radius: 20,
+        speed: 2,
+        color: 'red',
+        active: true // Whether the enemy is active
+    },
+    {
+        x: initialEnemyPositions[1].x,
+        y: initialEnemyPositions[1].y,
+        radius: 20,
+        speed: 2,
+        color: 'green',
+        active: true // Whether the enemy is active
+    }
+];
+
 
 //keyboard input
 const keys = {
-    KeyW: false,
-    KeyA: false,
-    KeyS: false,
-    KeyD: false,
-    KeyE: false, //attack button
-    KeyR: false, //reset enemy
+    KeyW: false, //up
+    KeyA: false, //right
+    KeyS: false, //down
+    KeyD: false, //left
+    KeyE: false, //attack 
+    KeyR: false, //reset enemies
 };
 
 document.addEventListener('keydown', (event) => {
@@ -46,11 +62,13 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
-//reset enemy fuction 
-function resetEnemy() {
-    enemy1.x = initialEnemyPosition.x;
-    enemy1.y = initialEnemyPosition.y; 
-    enemy1.active = true;
+//reset enemies function
+function resetEnemies() {
+    enemies.forEach((enemy, index) => {
+        enemy.x = initialEnemyPositions[index].x;
+        enemy.y = initialEnemyPositions[index].y;
+        enemy.active = true;
+    });
 }
 
 //update player and enemy position 
@@ -64,60 +82,70 @@ function update() {
     player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
     player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
 
-    //enemy follows player
-    if (enemy1.active) {
-        const dx = player.x - enemy1.x;
-        const dy = player.y -enemy1.y;
-        const distance = Math.sqrt(dx * dx + dy * dy)
-
-        if (distance > 0) {
-            enemy1.x += (dx / distance) * enemy1.speed;
-            enemy1.y += (dy / distance) * enemy1.speed;
-        }
-    }
-    
-    //kill enemy with E
-    if (keys.KeyE) {
-        const dx = player.x - enemy1.x;
-        const dy = player.y - enemy1.y;
+// Enemies follow the player
+enemies.forEach(enemy => {
+    if (enemy.active) {
+        const dx = player.x - enemy.x;
+        const dy = player.y - enemy.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance < player.radius + enemy1.radius) {
-                enemy1.active = false; //deactivates enemy
+        if (distance > 0) {
+            enemy.x += (dx / distance) * enemy.speed;
+            enemy.y += (dy / distance) * enemy.speed;
+        }
+    }
+});
+    
+ // Kill enemies when E is pressed
+    if (keys.KeyE) {
+        enemies.forEach(enemy => {
+            if (enemy.active) {
+                const dx = player.x - enemy.x;
+                const dy = player.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Assuming the player must be close enough to kill the enemy
+                if (distance < player.radius + enemy.radius) {
+                    enemy.active = false; // Deactivate the enemy
+                }
             }
+        });
     }
 
-    //reset enemy when R pressed
-    if(keys.KeyR) {
-        resetEnemy()
+    // Reset enemies when R is pressed
+    if (keys.KeyR) {
+        resetEnemies();
+    }
     }
 
-}
 
-//draw player on the canvas
+// Draw player and enemies on the canvas
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); //clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-    //draw background color
-    ctx.fillStyle = '#f0f0f0'; //background color
+    // Draw background color
+    ctx.fillStyle = '#f0f0f0'; // Background color
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    //draw player as a circle
+    // Draw player as a circle
     ctx.beginPath();
-    ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2); //circle: (x, y, radius, startAngle, endAngle)
-    ctx.fillStyle = player.color; //set circle color
-    ctx.fill(); //fill the circle
+    ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+    ctx.fillStyle = player.color;
+    ctx.fill();
     ctx.closePath();
 
-    //draw enemy if active
-    if (enemy1.active) {
-        ctx.beginPath();
-        ctx.arc(enemy1.x, enemy1.y, enemy1.radius, 0, Math.PI * 2);
-        ctx.fillStyle = enemy1.color;
-        ctx.fill();
-        ctx.closePath();
-    }
+    // Draw active enemies
+    enemies.forEach(enemy => {
+        if (enemy.active) {
+            ctx.beginPath();
+            ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+            ctx.fillStyle = enemy.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+    });
 }
+
 
 //main game loop
 function gameLoop() {
@@ -128,6 +156,7 @@ function gameLoop() {
 
 //start game loop
 gameLoop();
+
 
 
 
