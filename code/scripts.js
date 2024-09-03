@@ -39,9 +39,10 @@ const enemies = [
 
 // Bullet properties
 const bulletImage = new Image();
-bulletImage.src = '../images/bullet1.png';
+bulletImage.src = '../images/bullet1.png'; // Ensure this path is correct
 const bullets = [];
 const bulletSpeed = 10;
+const bulletSize = 10; // Adjust bullet size as needed
 
 // Score variable
 let score = 0;
@@ -54,25 +55,16 @@ let gameWon = false;
 let mouseX = 0;
 let mouseY = 0;
 
-// Global keys object to track pressed keys
-const keys = {
-    KeyW: false,
-    KeyS: false,
-    KeyA: false,
-    KeyD: false
-};
+// Key states
+const keys = {};
 
 // Event listeners for keyboard input
 document.addEventListener('keydown', (event) => {
-    if (keys.hasOwnProperty(event.code)) {
-        keys[event.code] = true;
-    }
+    keys[event.code] = true;
 });
 
 document.addEventListener('keyup', (event) => {
-    if (keys.hasOwnProperty(event.code)) {
-        keys[event.code] = false;
-    }
+    keys[event.code] = false;
 });
 
 // Handle mouse movement for targeting
@@ -100,7 +92,7 @@ canvas.addEventListener('click', () => {
         });
     }
 
-    // Handle clicks for attacking
+    // Handle clicks for attacking enemies
     enemies.forEach(enemy => {
         if (enemy.active) {
             const dx = mouseX - enemy.x;
@@ -167,10 +159,10 @@ function resetEnemies() {
 function update() {
     if (gameOver) return; // Stop updating if game is over
 
-    if (keys.KeyW) player.y -= player.speed;
-    if (keys.KeyS) player.y += player.speed;
-    if (keys.KeyA) player.x -= player.speed;
-    if (keys.KeyD) player.x += player.speed;
+    if (keys['KeyW']) player.y -= player.speed;
+    if (keys['KeyS']) player.y += player.speed;
+    if (keys['KeyA']) player.x -= player.speed;
+    if (keys['KeyD']) player.x += player.speed;
 
     // Ensure player stays within canvas bounds
     player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
@@ -265,9 +257,9 @@ function draw() {
         }
     });
 
-    // Draw bullets
+    // Draw bullets with adjusted size
     bullets.forEach(bullet => { 
-        ctx.drawImage(bulletImage, bullet.x - bulletImage.width / 2, bullet.y - bulletImage.height / 2); 
+        ctx.drawImage(bulletImage, bullet.x - bulletSize / 2, bullet.y - bulletSize / 2, bulletSize, bulletSize); 
     });
 
     // Draw the score in the top-right corner
@@ -334,7 +326,6 @@ function gameLoop() {
 
 // Start game loop
 gameLoop();
-
 
 
 
