@@ -1,3 +1,4 @@
+//Version 1.4
 // Canvas element and context
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -42,7 +43,7 @@ const bulletImage = new Image();
 bulletImage.src = '../images/bullet1.png'; // Ensure this path is correct
 const bullets = [];
 const bulletSpeed = 10;
-const bulletSize = 10; // Adjust bullet size as needed
+const bulletSize = 20; // Adjust bullet size as needed
 
 // Score variable
 let score = 0;
@@ -89,26 +90,8 @@ canvas.addEventListener('click', () => {
             y: player.y,
             dx: bulletDirectionX,
             dy: bulletDirectionY,
+            angle: Math.atan2(bulletDirectionY, bulletDirectionX) // Calculate bullet angle
         });
-    }
-
-    // Handle clicks for attacking enemies
-    enemies.forEach(enemy => {
-        if (enemy.active) {
-            const dx = mouseX - enemy.x;
-            const dy = mouseY - enemy.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < player.radius + enemy.radius) {
-                enemy.active = false; // Attack the enemy
-                score += 1; // Increase score
-            }
-        }
-    });
-
-    // Check for game won condition
-    if (enemies.every(enemy => !enemy.active)) {
-        gameWon = true; // Set game won flag
     }
 });
 
@@ -201,7 +184,10 @@ function update() {
                 const dy = bullet.y - enemy.y; 
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance < player.radius + enemy.radius) {
+                // Define a collision threshold (distance within which bullet must be considered in the center)
+                const collisionThreshold = enemy.radius / 2; // Adjust this value as needed
+
+                if (distance < collisionThreshold) {
                     enemy.active = false; // Attack the enemy
                     score += 1; // Increase score
 
@@ -257,9 +243,20 @@ function draw() {
         }
     });
 
-    // Draw bullets with adjusted size
-    bullets.forEach(bullet => { 
-        ctx.drawImage(bulletImage, bullet.x - bulletSize / 2, bullet.y - bulletSize / 2, bulletSize, bulletSize); 
+    // Draw bullets with rotation
+    bullets.forEach(bullet => {
+        ctx.save(); // Save the current context state
+
+        // Move the context to the bullet's position
+        ctx.translate(bullet.x, bullet.y);
+
+        // Rotate the context to the bullet's angle
+        ctx.rotate(bullet.angle);
+
+        // Draw the bullet image
+        ctx.drawImage(bulletImage, -bulletSize / 2, -bulletSize / 2, bulletSize, bulletSize);
+
+        ctx.restore(); // Restore the context state
     });
 
     // Draw the score in the top-right corner
@@ -326,20 +323,6 @@ function gameLoop() {
 
 // Start game loop
 gameLoop();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
