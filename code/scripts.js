@@ -1,4 +1,3 @@
-//Version 1.4
 // Canvas element and context
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -45,6 +44,10 @@ const bullets = [];
 const bulletSpeed = 10;
 const bulletSize = 20; // Adjust bullet size as needed
 
+// Ammo properties
+const maxAmmo = 5;
+let ammo = maxAmmo;
+
 // Score variable
 let score = 0;
 
@@ -79,19 +82,27 @@ canvas.addEventListener('mousemove', (event) => {
 canvas.addEventListener('click', () => {
     if (gameOver || gameWon) return;
 
-    const dx = mouseX - player.x;
-    const dy = mouseY - player.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    if (distance > 0) {
-        const bulletDirectionX = dx / distance;
-        const bulletDirectionY = dy / distance;
-        bullets.push({
-            x: player.x,
-            y: player.y,
-            dx: bulletDirectionX,
-            dy: bulletDirectionY,
-            angle: Math.atan2(bulletDirectionY, bulletDirectionX) // Calculate bullet angle
-        });
+    if (ammo > 0) {
+        const dx = mouseX - player.x;
+        const dy = mouseY - player.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance > 0) {
+            const bulletDirectionX = dx / distance;
+            const bulletDirectionY = dy / distance;
+            bullets.push({
+                x: player.x,
+                y: player.y,
+                dx: bulletDirectionX,
+                dy: bulletDirectionY,
+                angle: Math.atan2(bulletDirectionY, bulletDirectionX) // Calculate bullet angle
+            });
+
+            ammo -= 1; // Decrease ammo count
+        }
+    }
+
+    if (ammo === 0) {
+        // Optional: play out of ammo sound or animation here
     }
 });
 
@@ -121,8 +132,9 @@ function resetGame() {
     // Reset bullets
     bullets.length = 0; 
 
-    // Reset score
+    // Reset score and ammo
     score = 0; 
+    ammo = maxAmmo;
 
     // Reset game over flag
     gameOver = false;
@@ -259,12 +271,13 @@ function draw() {
         ctx.restore(); // Restore the context state
     });
 
-    // Draw the score in the top-right corner
+    // Draw the score and ammo in the top-right corner
     ctx.font = '24px Arial';
     ctx.fillStyle = 'black';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
     ctx.fillText('Score: ' + score, canvas.width - 20, 20);
+    ctx.fillText('Ammo: ' + ammo, canvas.width - 20, 50);
 
     // Draw crosshair   
     drawCrosshair(mouseX, mouseY);
@@ -323,8 +336,6 @@ function gameLoop() {
 
 // Start game loop
 gameLoop();
-
-
 
 
 
